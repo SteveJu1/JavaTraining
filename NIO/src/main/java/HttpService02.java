@@ -8,21 +8,22 @@ public class HttpService02 {
         ServerSocket serverSocket = new ServerSocket(8081);
         while (true) {
             System.out.println("pending when socket accept");
+            // accept pending task queue,wait to consumer
             Socket socket = serverSocket.accept();
             System.out.println("after socket accept");
 
-                new Thread(() -> {
-                    try {
-                        service(socket);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
-
+            new Thread(() -> {
+                try {
+                    service(socket);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
         }
     }
 
-    private static void service(Socket socket) throws IOException {
+    private static void service(Socket socket) throws IOException, InterruptedException {
+        System.out.println(socket.toString());
         PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
 
         printWriter.println("HTTP/1.1 200 OK");
@@ -33,5 +34,6 @@ public class HttpService02 {
         printWriter.write(body);
         printWriter.close();
         socket.close();
+        System.out.println("finish thread work,current thread:" + Thread.currentThread().getName());
     }
 }
